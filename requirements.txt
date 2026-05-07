@@ -9,5 +9,6 @@ gtts
 beautifulsoup4
 requests
 PyPDF2
+pdfplumber
 accelerate
 safetensors
