@@ -1,0 +1,11 @@
+streamlit
+transformers
+torch
+langdetect
+pytesseract
+pillow
+gtts
+beautifulsoup4
+requests
+PyPDF2
+sentencepiece
