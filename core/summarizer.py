@@ -1,21 +1,37 @@
 from transformers import pipeline
 
-_summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
-
 MAX_CHARS = 900
 
+try:
+    _summarizer = pipeline(
+        task="text2text-generation",
+        model="google/flan-t5-base"
+    )
+except Exception:
+    _summarizer = None
+
+
 def summarize(text):
-    if not text or len(text.strip()) < 50:
-        return text
 
-    chunks = [text[i:i+MAX_CHARS] for i in range(0, len(text), MAX_CHARS)]
-    summaries = []
+    if not text:
+        return "No text provided."
 
-    for chunk in chunks[:5]:   # limit to avoid heavy load
-        try:
-            result = _summarizer(chunk, max_length=120, min_length=40, do_sample=False)
-            summaries.append(result[0]["summary_text"])
-        except Exception:
-            continue
+    text = text[:MAX_CHARS]
 
-    return " ".join(summaries)
+    # Fallback if model fails
+    if _summarizer is None:
+        return text[:300]
+
+    try:
+        prompt = f"Summarize this text:\n{text}"
+
+        result = _summarizer(
+            prompt,
+            max_new_tokens=120,
+            do_sample=False
+        )
+
+        return result[0]["generated_text"]
+
+    except Exception:
+        return text[:300]
