@@ -1,6 +1,6 @@
 from transformers import pipeline
 
-MAX_CHARS = 900
+MAX_CHARS = 12000
 
 try:
     _summarizer = pipeline(
@@ -18,20 +18,19 @@ def summarize(text):
 
     text = text[:MAX_CHARS]
 
-    # Fallback if model fails
     if _summarizer is None:
-        return text[:300]
+        return text[:1200]
 
     try:
-        prompt = f"Summarize this text:\n{text}"
+        prompt = f"Generate a detailed summary of this text:\n{text}"
 
         result = _summarizer(
             prompt,
-            max_new_tokens=120,
+            max_new_tokens=1500,
             do_sample=False
         )
 
         return result[0]["generated_text"]
 
     except Exception:
-        return text[:300]
+        return text[:1200]
